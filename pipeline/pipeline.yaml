@@ -1,0 +1,72 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  CodePipelineServiceRole:
+    Type: String
+
+  CloudFormationServiceRole:
+    Type: String
+
+  ArtifactBucket:
+    Type: String
+
+  GitHubUser:
+    Type: String
+
+  GitHubToken:
+    Type: String
+
+  GitHubRepo:
+    Type: String
+
+  GitHubBranch:
+    Type: String
+
+Resources:
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !Ref CodePipelineServiceRole
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHub
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: Templates
+              RunOrder: 1
+        - Name: Deployment
+          Actions:
+            - Name: VPC-Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                RoleArn: !Ref CloudFormationServiceRole
+                Capabilities: CAPABILITY_IAM
+                StackName: VPCStack
+                TemplateConfiguration: Templates::vpc/vpc-parameters.json
+                TemplatePath: Templates::vpc/vpc.yaml
+              InputArtifacts:
+                - Name: Templates
+              RunOrder: 1
+
+Outputs:
+  PipelineUrl:
+    Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
