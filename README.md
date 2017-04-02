@@ -31,4 +31,9 @@ aws cloudformation deploy \
 
 The other way to deploy the pipeline to to use the CloudFormation console to deploy the templates, one at a time, in the order listed above, copying and pasting the outputs and inputs as appropriate.
 
+## The VPC
+The [vpc](https://github.com/keithsharp/kubernetes-cloudformation/tree/master/vpc) directory holds the CloudFormation YAML file and JSON Parameters file to deploy the VPC structure.  Once you have created the pipeline, as described above, AWS CodePipeline and AWS CloudFormation should automatically kick in and deploy the VPC.  This takes a few seconds to trigger so be patient.  You can track the status using the AWS CodePipeline Web Console.
+
+Note that the parameters file format is different for parameters supplied to a CloudFormation template through the CloudFormation Web Console or CLI to those supplied to a CloudFormation deployment stage in a CodePipeline.  It would be nice if Amazon made these formats the same, and switched them to YAML!
+
 Keith Sharp, [kms@passback.co.uk](mailto:kms@passback.co.uk)
