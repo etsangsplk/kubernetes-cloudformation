@@ -1,0 +1,48 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    VPCCidr:
+        Description: IP Address range for the VPC
+        Type: String
+        Default: 10.0.0.0/16
+
+    EtcDSubnetCidr:
+        Description: IP Address range for the etcd subnet
+        Type: String
+        Default: 10.0.1.0/24
+
+Resources:
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: !Ref VPCCidr
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            InstanceTenancy: default
+
+    EtcDSubnetA:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: !Ref EtcDSubnetCidr
+            MapPublicIpOnLaunch: false
+
+    S3Endpoint:
+        Type: AWS::EC2::VPCEndpoint
+        Properties:
+            ServiceName: !Join ['', [com.amazonaws., !Ref 'AWS::Region', .s3]]
+            VpcId: !Ref VPC
+
+Outputs:
+    VPC:
+        Description: The ID of the VPC
+        Value: !Ref VPC
+        Export:
+            Name: Kubernetes-VPC
+
+    EtcDSubnetA:
+        Description: The ID of the etcd subnet in AZ A
+        Value: !Ref EtcDSubnetA
+        Export:
+            Name: EtcdSubnet-A
