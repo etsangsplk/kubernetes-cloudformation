@@ -2,67 +2,67 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Parameters:
-  ArtifactBucket:
-    Type: String
+    ArtifactBucket:
+        Type: String
 
 Resources:
-  CodePipelineServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub CodePipeline-${AWS::StackName}
-      Path: /
-      AssumeRolePolicyDocument: |
-        {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": { "Service": [ "codepipeline.amazonaws.com" ]},
-            "Action": [ "sts:AssumeRole"]
-          }]
-        }
-      Policies:
-        - PolicyName: CodePipelinePolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Resource:
-                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                  - s3:GetBucketVersioning
-              - Resource: "*"
-                Effect: Allow
-                Action:
-                  - cloudformation:*
-                  - iam:PassRole
+    CodePipelineServiceRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: !Sub CodePipeline-${AWS::StackName}
+            Path: /
+            AssumeRolePolicyDocument: |
+            {
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Principal": { "Service": [ "codepipeline.amazonaws.com" ]},
+                    "Action": [ "sts:AssumeRole"]
+                }]
+            }
+            Policies:
+              - PolicyName: CodePipelinePolicy
+                PolicyDocument:
+                    Version: 2012-10-17
+                    Statement:
+                      - Resource:
+                          - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                        Effect: Allow
+                        Action:
+                          - s3:PutObject
+                          - s3:GetObject
+                          - s3:GetObjectVersion
+                          - s3:GetBucketVersioning
+                      - Resource: "*"
+                        Effect: Allow
+                        Action:
+                          - cloudformation:*
+                          - iam:PassRole
 
-  CloudFormationServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub CloudFormation-${AWS::StackName}
-      Path: /
-      AssumeRolePolicyDocument: |
-        {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": { "Service": [ "cloudformation.amazonaws.com" ]},
-            "Action": [ "sts:AssumeRole"]
-          }]
-        }
-      Policies:
-        - PolicyName: CloudFormationPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Resource: "*"
-                Effect: Allow
-                Action: "*" # This is bad, limit to EC2/VPC stuff
+    CloudFormationServiceRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: !Sub CloudFormation-${AWS::StackName}
+            Path: /
+            AssumeRolePolicyDocument: |
+            {
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Principal": { "Service": [ "cloudformation.amazonaws.com" ]},
+                    "Action": [ "sts:AssumeRole"]
+                }]
+            }
+            Policies:
+              - PolicyName: CloudFormationPolicy
+                PolicyDocument:
+                    Version: 2012-10-17
+                    Statement:
+                      - Resource: "*"
+                        Effect: Allow
+                        Action: "*" # This is bad, limit to EC2/VPC stuff
 
 Outputs:
-  CodePipelineServiceRoleARN:
-    Value: !GetAtt CodePipelineServiceRole.Arn
+    CodePipelineServiceRoleARN:
+        Value: !GetAtt CodePipelineServiceRole.Arn
 
-  CloudFormationServiceRoleARN:
-    Value: !GetAtt CloudFormationServiceRole.Arn
+    CloudFormationServiceRoleARN:
+        Value: !GetAtt CloudFormationServiceRole.Arn

@@ -2,45 +2,45 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Parameters:
-  GitHubUser:
-    Type: String
-    Description: GitHub Username
+    GitHubUser:
+        Type: String
+        Description: GitHub Username
 
-  GitHubToken:
-    Type: String
-    Description: GitHub OAUTH token
+    GitHubToken:
+        Type: String
+        Description: GitHub OAUTH token
 
-  GitHubRepo:
-    Type: String
-    Description: GitHub Repository URL
+    GitHubRepo:
+        Type: String
+        Description: GitHub Repository URL
 
-  GitHubBranch:
-    Type: String
-    Default: master
-    Description: GitHub Repository Branch
+    GitHubBranch:
+        Type: String
+        Default: master
+        Description: GitHub Repository Branch
 
 Resources:
-  PipelineBucketStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/s3.yaml
+    PipelineBucketStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/s3.yaml
 
-  PipelineRoleStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/pipeline-roles.yaml
-      Parameters:
-        ArtifactBucket: !GetAtt PipelineBucketStack.Outputs.ArtifactBucket
+    PipelineRoleStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/pipeline-roles.yaml
+            Parameters:
+                ArtifactBucket: !GetAtt PipelineBucketStack.Outputs.ArtifactBucket
 
-  PipelineStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/pipeline.yaml
-      Parameters:
-        ArtifactBucket: !GetAtt PipelineBucketStack.Outputs.ArtifactBucket
-        GitHubUser: !Ref GitHubUser
-        GitHubToken: !Ref GitHubToken
-        GitHubRepo: !Ref GitHubRepo
-        GitHubBranch: !Ref GitHubBranch
-        CodePipelineServiceRole: !GetAtt PipelineRoleStack.Outputs.CodePipelineServiceRoleARN
-        CloudFormationServiceRole: !GetAtt PipelineRoleStack.Outputs.CloudFormationServiceRoleARN
+    PipelineStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: https://s3-eu-west-1.amazonaws.com/passback-cloudformation-templates/kubernetes-pipeline/pipeline.yaml
+            Parameters:
+                ArtifactBucket: !GetAtt PipelineBucketStack.Outputs.ArtifactBucket
+                GitHubUser: !Ref GitHubUser
+                GitHubToken: !Ref GitHubToken
+                GitHubRepo: !Ref GitHubRepo
+                GitHubBranch: !Ref GitHubBranch
+                CodePipelineServiceRole: !GetAtt PipelineRoleStack.Outputs.CodePipelineServiceRoleARN
+                CloudFormationServiceRole: !GetAtt PipelineRoleStack.Outputs.CloudFormationServiceRoleARN

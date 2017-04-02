@@ -2,9 +2,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Resources:
-  ArtifactBucket:
-    Type: AWS::S3::Bucket
+    ArtifactBucket:
+        Type: AWS::S3::Bucket
+
+    BinaryBucket:
+        Type: AWS::S3::Bucket
 
 Outputs:
-  ArtifactBucket:
-    Value: !Ref ArtifactBucket
+    ArtifactBucket:
+        Value: !Ref ArtifactBucket
+
+    BinaryBucket:
+        Value: !Ref BinaryBucket
+        Export:
+            Name: BinaryBucket
